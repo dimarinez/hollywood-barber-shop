@@ -279,12 +279,12 @@
         .hero-content { position: relative; z-index: 2; max-width: 700px; }
         .stars {
             color: var(--gold);
-            font-size: 1.8rem;
-            letter-spacing: 8px;
             margin-bottom: 1.5rem;
             -webkit-animation: starPulse 3s ease-in-out infinite;
             animation: starPulse 3s ease-in-out infinite;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         .hero h1 {
             font-family: 'Cinzel', serif;
@@ -401,9 +401,15 @@
             padding: 0 2.5rem;
         }
         .marquee-inner span::after {
-            content: '\2605';
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
             margin-left: 2.5rem;
-            color: rgba(10,10,10,0.4);
+            vertical-align: middle;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='rgba(10,10,10,0.4)' stroke-width='1.5'%3E%3Cpolygon points='12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26' fill='rgba(10,10,10,0.4)' stroke='rgba(10,10,10,0.4)'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
         }
         @-webkit-keyframes marqueeScroll {
             0% { -webkit-transform: translateX(0); }
@@ -563,7 +569,7 @@
         <div class="gold-ring gold-ring-2"></div>
 
         <div class="hero-content">
-            <div class="stars">&#9733; &#9733; &#9733;</div>
+            <div class="stars"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" style="display:inline-block;vertical-align:middle"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor" stroke="currentColor"/></svg> <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" style="display:inline-block;vertical-align:middle"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor" stroke="currentColor"/></svg> <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" style="display:inline-block;vertical-align:middle"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor" stroke="currentColor"/></svg></div>
             <h1><span>HOLLYWOOD</span><br>BARBER SHOP</h1>
             <p class="address">4832 Hollywood Blvd, Los Angeles, CA 90027</p>
             <p>Classic barbering on the iconic Hollywood Boulevard. Precision cuts, hot towel shaves, and the kind of grooming that makes you feel like a star.</p>
