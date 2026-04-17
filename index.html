@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, -ms-text-size-adjust: 100%, -webkit-text-size-adjust: 100%">
     <title>Hollywood Barber Shop — 4832 Hollywood Blvd, Los Angeles</title>
     <meta name="description" content="Hollywood Barber Shop on Hollywood Blvd. Classic and modern barbering in the heart of Hollywood. Walk-ins welcome.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,16 +18,79 @@
             --white: #f5f5f5;
             --silver: #c0c0c0;
             --gray: #777;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; color: var(--white); background: var(--black); }
 
+        /* ── Reset & Base ───────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        *::selection {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--white);
+            background: var(--black);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ── Film Grain Overlay ─────────────────────── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 180px 180px;
+        }
+
+        /* ── Scroll Reveal ──────────────────────────── */
+        .reveal {
+            opacity: 0;
+            -webkit-transform: translateY(40px);
+            -ms-transform: translateY(40px);
+            transform: translateY(40px);
+            -webkit-transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+            transition: opacity 0.9s var(--ease-out-expo), -webkit-transform 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+        }
+        .reveal.visible {
+            opacity: 1;
+            -webkit-transform: translateY(0);
+            -ms-transform: translateY(0);
+            transform: translateY(0);
+        }
+
+        /* ── Navigation ─────────────────────────────── */
         nav {
             position: fixed; top: 0; width: 100%; z-index: 100;
-            background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
+            background: transparent;
+            -webkit-backdrop-filter: blur(0px);
+            backdrop-filter: blur(0px);
+            padding: 1.25rem 2rem;
             display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid transparent;
+            -webkit-transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, padding 0.5s ease;
+            transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, padding 0.5s ease;
+        }
+        nav.scrolled {
+            background: rgba(10,10,10,0.95);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(212,175,55,0.15);
+            padding: 0.9rem 2rem;
         }
         .nav-brand {
             font-family: 'Cinzel', serif;
@@ -40,30 +104,191 @@
             color: var(--silver); text-decoration: none;
             font-size: 0.8rem; font-weight: 500;
             letter-spacing: 2px; text-transform: uppercase;
+            -webkit-transition: color 0.3s;
             transition: color 0.3s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 1px;
+            background: var(--gold);
+            -webkit-transition: width 0.4s var(--ease-out-expo);
+            transition: width 0.4s var(--ease-out-expo);
         }
         .nav-links a:hover { color: var(--gold); }
+        .nav-links a:hover::after { width: 100%; }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
-        .hamburger span { width: 25px; height: 2px; background: var(--gold); }
+        .hamburger span { width: 25px; height: 2px; background: var(--gold); -webkit-transition: all 0.3s; transition: all 0.3s; }
 
+        /* ── Scroll Indicator ───────────────────────── */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 2;
+        }
+        .scroll-indicator span {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gray);
+        }
+        .scroll-indicator .mouse {
+            width: 20px; height: 32px;
+            border: 1.5px solid var(--gold);
+            border-radius: 10px;
+            position: relative;
+        }
+        .scroll-indicator .mouse::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 50%;
+            width: 2px; height: 6px;
+            background: var(--gold);
+            border-radius: 1px;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            -webkit-animation: scrollWheel 1.8s ease-in-out infinite;
+            animation: scrollWheel 1.8s ease-in-out infinite;
+        }
+        @-webkit-keyframes scrollWheel {
+            0% { opacity: 1; top: 6px; }
+            100% { opacity: 0; top: 18px; }
+        }
+        @keyframes scrollWheel {
+            0% { opacity: 1; top: 6px; }
+            100% { opacity: 0; top: 18px; }
+        }
+
+        /* ── Star Sparkle Animations ────────────────── */
+        @-webkit-keyframes sparkle {
+            0%, 100% { opacity: 0; -webkit-transform: scale(0); transform: scale(0); }
+            50% { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        @-webkit-keyframes sparkleLarge {
+            0%, 100% { opacity: 0; -webkit-transform: scale(0) rotate(0deg); }
+            50% { opacity: 0.8; -webkit-transform: scale(1) rotate(180deg); }
+        }
+        @keyframes sparkleLarge {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 0.8; transform: scale(1) rotate(180deg); }
+        }
+
+        .sparkle-field {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .sparkle-dot {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: var(--gold);
+            border-radius: 50%;
+            -webkit-animation: sparkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
+            animation: sparkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
+        }
+        .sparkle-star {
+            position: absolute;
+            width: 6px; height: 6px;
+            -webkit-animation: sparkleLarge var(--dur, 4s) var(--delay, 0s) infinite ease-in-out;
+            animation: sparkleLarge var(--dur, 4s) var(--delay, 0s) infinite ease-in-out;
+        }
+        .sparkle-star::before, .sparkle-star::after {
+            content: '';
+            position: absolute;
+            background: var(--gold-light);
+        }
+        .sparkle-star::before {
+            width: 100%; height: 1px;
+            top: 50%; left: 0;
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+        }
+        .sparkle-star::after {
+            width: 1px; height: 100%;
+            left: 50%; top: 0;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+        }
+
+        /* ── Star Pulse (three-star header) ─────────── */
+        @-webkit-keyframes starPulse {
+            0%, 100% { opacity: 0.7; -webkit-transform: scale(1); }
+            50% { opacity: 1; -webkit-transform: scale(1.12); }
+        }
+        @keyframes starPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.12); }
+        }
+
+        /* ── Gold Ring Decorative ───────────────────── */
+        .gold-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(212,175,55,0.06);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Hero ───────────────────────────────────── */
         .hero {
             min-height: 100vh;
+            min-height: 100dvh;
             background: var(--black);
             display: flex; align-items: center; justify-content: center;
             text-align: center;
             padding: 6rem 2rem;
             position: relative;
+            overflow: hidden;
         }
         .hero::before {
             content: '';
             position: absolute; inset: 0;
             background: radial-gradient(ellipse at center, rgba(212,175,55,0.05) 0%, transparent 70%);
         }
-        .hero-content { position: relative; z-index: 1; max-width: 700px; }
-        .stars { color: var(--gold); font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 1.5rem; }
+        .hero .gold-ring-1 {
+            width: 700px; height: 700px;
+            top: 50%; left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            border-width: 1px;
+            border-color: rgba(212,175,55,0.04);
+        }
+        .hero .gold-ring-2 {
+            width: 500px; height: 500px;
+            top: 50%; left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            border-width: 1px;
+            border-color: rgba(212,175,55,0.06);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; }
+        .stars {
+            color: var(--gold);
+            font-size: 1.8rem;
+            letter-spacing: 8px;
+            margin-bottom: 1.5rem;
+            -webkit-animation: starPulse 3s ease-in-out infinite;
+            animation: starPulse 3s ease-in-out infinite;
+            display: inline-block;
+        }
         .hero h1 {
             font-family: 'Cinzel', serif;
-            font-size: 3.8rem;
+            font-size: clamp(2.4rem, 6vw, 3.8rem);
             font-weight: 700;
             line-height: 1.1;
             margin-bottom: 0.5rem;
@@ -78,36 +303,166 @@
             margin-bottom: 1.5rem;
         }
         .hero p { color: var(--gray); font-size: 1rem; line-height: 1.7; margin-bottom: 2.5rem; }
+
+        /* ── Sweep-Fill Buttons ──────────────────────── */
         .btn {
             display: inline-block; padding: 0.9rem 2.5rem;
             text-decoration: none; font-weight: 600;
             font-size: 0.85rem; letter-spacing: 2px;
-            text-transform: uppercase; transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            -webkit-transition: color 0.4s ease;
+            transition: color 0.4s ease;
+            z-index: 1;
         }
-        .btn-gold { background: var(--gold); color: var(--black); }
-        .btn-gold:hover { background: var(--gold-light); }
-        .btn-outline { border: 1px solid var(--gold); color: var(--gold); margin-left: 1rem; }
-        .btn-outline:hover { background: var(--gold); color: var(--black); }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            -webkit-transition: -webkit-transform 0.45s var(--ease-out-expo);
+            transition: transform 0.45s var(--ease-out-expo);
+        }
+        .btn-gold {
+            background: transparent; color: var(--black);
+        }
+        .btn-gold::before {
+            background: var(--gold);
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+            -webkit-transform-origin: left;
+            transform-origin: left;
+        }
+        .btn-gold:hover { color: var(--black); }
+        .btn-gold:hover::before {
+            background: var(--gold-light);
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+        }
+        .btn-outline {
+            border: 1px solid var(--gold); color: var(--gold); margin-left: 1rem;
+        }
+        .btn-outline::before {
+            background: var(--gold);
+            -webkit-transform: scaleX(0);
+            transform: scaleX(0);
+            -webkit-transform-origin: left;
+            transform-origin: left;
+        }
+        .btn-outline:hover {
+            color: var(--black);
+        }
+        .btn-outline:hover::before {
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+        }
 
-        section { padding: 5rem 2rem; }
-        .section-header { text-align: center; margin-bottom: 3rem; }
+        /* ── Section Divider with Dot ───────────────── */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            gap: 1rem;
+        }
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            width: 60px;
+            height: 1px;
+            background: rgba(212,175,55,0.2);
+        }
+        .section-divider .dot {
+            width: 5px; height: 5px;
+            background: var(--gold);
+            border-radius: 50%;
+        }
+
+        /* ── Marquee Strip ──────────────────────────── */
+        .marquee {
+            overflow: hidden;
+            background: var(--gold);
+            padding: 0.6rem 0;
+            white-space: nowrap;
+        }
+        .marquee-inner {
+            display: inline-flex;
+            -webkit-animation: marqueeScroll 30s linear infinite;
+            animation: marqueeScroll 30s linear infinite;
+        }
+        .marquee-inner span {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--black);
+            padding: 0 2.5rem;
+        }
+        .marquee-inner span::after {
+            content: '\2605';
+            margin-left: 2.5rem;
+            color: rgba(10,10,10,0.4);
+        }
+        @-webkit-keyframes marqueeScroll {
+            0% { -webkit-transform: translateX(0); }
+            100% { -webkit-transform: translateX(-50%); }
+        }
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ── Sections ───────────────────────────────── */
+        section { padding: 5rem 2rem; position: relative; overflow: hidden; }
+        .section-header { text-align: center; margin-bottom: 3rem; position: relative; z-index: 1; }
         .section-header h2 {
-            font-family: 'Cinzel', serif; font-size: 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             letter-spacing: 3px; font-weight: 600;
         }
         .section-header h2 span { color: var(--gold); }
         .section-header p { color: var(--gray); margin-top: 0.5rem; font-size: 0.9rem; }
         .gold-line { width: 50px; height: 2px; background: var(--gold); margin: 0.75rem auto; }
 
+        /* ── Services ───────────────────────────────── */
         .services { background: var(--dark); }
+        .services .gold-ring-section {
+            width: 600px; height: 600px;
+            top: -100px; right: -200px;
+            border-color: rgba(212,175,55,0.04);
+        }
         .services-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1px; max-width: 900px; margin: 0 auto;
             background: rgba(212,175,55,0.1);
+            position: relative; z-index: 1;
         }
         .service-card {
             background: var(--charcoal); padding: 2rem;
             display: flex; justify-content: space-between; align-items: center;
+            position: relative;
+            border-left: 3px solid transparent;
+            -webkit-transition: border-color 0.4s var(--ease-out-expo), background 0.4s ease;
+            transition: border-color 0.4s var(--ease-out-expo), background 0.4s ease;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 50%;
+            width: 3px; height: 0;
+            background: var(--gold);
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            -webkit-transition: height 0.4s var(--ease-out-expo);
+            transition: height 0.4s var(--ease-out-expo);
+        }
+        .service-card:hover::before {
+            height: 100%;
+        }
+        .service-card:hover {
+            background: rgba(212,175,55,0.03);
         }
         .service-card h3 {
             font-family: 'Cinzel', serif; font-size: 0.95rem;
@@ -119,11 +474,18 @@
             color: var(--gold); font-weight: 600;
         }
 
+        /* ── Location ───────────────────────────────── */
         .location {
             background: var(--black); text-align: center;
         }
+        .location .gold-ring-section {
+            width: 500px; height: 500px;
+            bottom: -150px; left: -150px;
+            border-color: rgba(212,175,55,0.04);
+        }
         .location-details {
             max-width: 600px; margin: 0 auto 2rem;
+            position: relative; z-index: 1;
         }
         .location-details .item {
             display: flex; justify-content: space-between;
@@ -134,25 +496,50 @@
         .location-details .label { color: var(--gold); font-weight: 500; letter-spacing: 1px; }
         .location-details .value { color: var(--silver); }
 
-        .map-container { max-width: 700px; margin: 0 auto; border: 1px solid rgba(212,175,55,0.2); }
+        .map-container {
+            max-width: 700px; margin: 0 auto;
+            border: 1px solid rgba(212,175,55,0.2);
+            position: relative; z-index: 1;
+        }
         .map-container iframe { width: 100%; height: 300px; border: none; filter: grayscale(0.8) contrast(0.9); }
 
+        /* ── Footer ─────────────────────────────────── */
         footer {
             background: var(--black); border-top: 1px solid rgba(212,175,55,0.1);
             color: var(--gray); text-align: center; padding: 2rem; font-size: 0.8rem;
         }
 
+        /* ── Reduced Motion ─────────────────────────── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                -webkit-animation-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                -webkit-animation-iteration-count: 1 !important;
+                animation-iteration-count: 1 !important;
+                -webkit-transition-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .reveal { opacity: 1; -webkit-transform: none; transform: none; }
+            .marquee-inner { -webkit-animation: none; animation: none; }
+        }
+
+        /* ── Mobile ──────────────────────────────────── */
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hamburger { display: flex; }
             .nav-links.active {
                 display: flex; flex-direction: column; position: absolute;
                 top: 100%; left: 0; right: 0;
-                background: var(--black); padding: 1.5rem 2rem; gap: 1rem;
+                background: rgba(10,10,10,0.98); padding: 1.5rem 2rem; gap: 1rem;
+                -webkit-backdrop-filter: blur(12px);
+                backdrop-filter: blur(12px);
             }
-            .hero h1 { font-size: 2.5rem; }
+            .hero h1 { font-size: clamp(2rem, 8vw, 2.5rem); }
             .btn-outline { margin-left: 0; margin-top: 1rem; }
             .hero .btn { display: block; width: 100%; text-align: center; }
+            .scroll-indicator { display: none; }
+            .gold-ring { display: none; }
         }
     </style>
 </head>
@@ -163,76 +550,112 @@
             <li><a href="#services">Services</a></li>
             <li><a href="#location">Location</a></li>
         </ul>
-        <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('active')" aria-label="Menu">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
 
     <section class="hero">
+        <!-- Sparkle field -->
+        <div class="sparkle-field" id="sparkleField"></div>
+        <!-- Decorative gold rings -->
+        <div class="gold-ring gold-ring-1"></div>
+        <div class="gold-ring gold-ring-2"></div>
+
         <div class="hero-content">
-            <div class="stars">★ ★ ★</div>
+            <div class="stars">&#9733; &#9733; &#9733;</div>
             <h1><span>HOLLYWOOD</span><br>BARBER SHOP</h1>
             <p class="address">4832 Hollywood Blvd, Los Angeles, CA 90027</p>
             <p>Classic barbering on the iconic Hollywood Boulevard. Precision cuts, hot towel shaves, and the kind of grooming that makes you feel like a star.</p>
-            <a href="#location" class="btn btn-gold">Visit Us</a>
+            <a href="#services" class="btn btn-gold">Visit Us</a>
             <a href="#services" class="btn btn-outline">Services</a>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="mouse"></div>
         </div>
     </section>
 
+    <!-- Marquee Strip -->
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-inner">
+            <span>Walk-Ins Welcome</span>
+            <span>Hollywood Blvd</span>
+            <span>Classic Cuts</span>
+            <span>Hot Towel Shaves</span>
+            <span>Fades &amp; Lineups</span>
+            <span>Since Day One</span>
+            <span>Walk-Ins Welcome</span>
+            <span>Hollywood Blvd</span>
+            <span>Classic Cuts</span>
+            <span>Hot Towel Shaves</span>
+            <span>Fades &amp; Lineups</span>
+            <span>Since Day One</span>
+        </div>
+    </div>
+
     <section class="services" id="services">
-        <div class="section-header">
+        <div class="gold-ring gold-ring-section"></div>
+        <div class="section-header reveal">
             <h2>THE <span>MENU</span></h2>
             <div class="gold-line"></div>
         </div>
         <div class="services-grid">
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Haircut</h3><div class="desc">Precision cut & style</div></div>
                 <div class="price">$25</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Fade</h3><div class="desc">All fade styles</div></div>
                 <div class="price">$30</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Beard Trim</h3><div class="desc">Shape & detail</div></div>
                 <div class="price">$15</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Cut + Beard</h3><div class="desc">Complete service</div></div>
                 <div class="price">$38</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Hot Towel Shave</h3><div class="desc">Straight razor luxury</div></div>
                 <div class="price">$30</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Kids Cut</h3><div class="desc">12 and under</div></div>
                 <div class="price">$18</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Lineup</h3><div class="desc">Clean edge up</div></div>
                 <div class="price">$12</div>
             </div>
-            <div class="service-card">
+            <div class="service-card reveal">
                 <div><h3>Senior Cut</h3><div class="desc">65 and over</div></div>
                 <div class="price">$18</div>
             </div>
         </div>
     </section>
 
+    <!-- Section Divider -->
+    <div class="section-divider" style="padding: 0; background: var(--black);">
+        <div class="dot"></div>
+    </div>
+
     <section class="location" id="location">
-        <div class="section-header">
+        <div class="gold-ring gold-ring-section"></div>
+        <div class="section-header reveal">
             <h2>FIND <span>US</span></h2>
             <div class="gold-line"></div>
             <p>Walk-ins welcome, right on Hollywood Blvd</p>
         </div>
-        <div class="location-details">
+        <div class="location-details reveal">
             <div class="item"><span class="label">Address</span><span class="value">4832 Hollywood Blvd, LA 90027</span></div>
-            <div class="item"><span class="label">Monday–Friday</span><span class="value">9:00 AM – 7:00 PM</span></div>
-            <div class="item"><span class="label">Saturday</span><span class="value">8:00 AM – 6:00 PM</span></div>
-            <div class="item"><span class="label">Sunday</span><span class="value">9:00 AM – 4:00 PM</span></div>
+            <div class="item"><span class="label">Monday&ndash;Friday</span><span class="value">9:00 AM &ndash; 7:00 PM</span></div>
+            <div class="item"><span class="label">Saturday</span><span class="value">8:00 AM &ndash; 6:00 PM</span></div>
+            <div class="item"><span class="label">Sunday</span><span class="value">9:00 AM &ndash; 4:00 PM</span></div>
         </div>
-        <div class="map-container">
+        <div class="map-container reveal">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3303.0!2d-118.305!3d34.1015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2bf5bde44b7c7%3A0x4fcb297e4b8d4b0!2s4832%20Hollywood%20Blvd%2C%20Los%20Angeles%2C%20CA%2090027!5e0!3m2!1sen!2sus!4v1" allowfullscreen loading="lazy"></iframe>
         </div>
     </section>
@@ -240,5 +663,108 @@
     <footer>
         <p>&copy; 2026 Hollywood Barber Shop. All rights reserved. | Hollywood Blvd, Los Angeles</p>
     </footer>
+
+    <script>
+        /* ── Nav: transparent -> solid on scroll ──── */
+        (function() {
+            var nav = document.querySelector('nav');
+            var scrollThreshold = 60;
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > scrollThreshold) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }, { passive: true });
+        })();
+
+        /* ── Scroll Reveal with IntersectionObserver ── */
+        (function() {
+            var reveals = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                reveals.forEach(function(el) {
+                    el.classList.add('visible');
+                });
+                return;
+            }
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var el = entry.target;
+                        var delay = el.dataset.delay || 0;
+                        setTimeout(function() {
+                            el.classList.add('visible');
+                        }, delay);
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            reveals.forEach(function(el, i) {
+                /* Stagger siblings in the same parent */
+                var siblings = el.parentElement.querySelectorAll('.reveal');
+                var idx = Array.prototype.indexOf.call(siblings, el);
+                el.dataset.delay = idx * 80;
+                observer.observe(el);
+            });
+        })();
+
+        /* ── Sparkle Field Generation ─────────────── */
+        (function() {
+            var field = document.getElementById('sparkleField');
+            if (!field) return;
+            var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReduced) return;
+
+            for (var i = 0; i < 30; i++) {
+                var dot = document.createElement('div');
+                dot.className = 'sparkle-dot';
+                dot.style.left = Math.random() * 100 + '%';
+                dot.style.top = Math.random() * 100 + '%';
+                dot.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+                dot.style.setProperty('--delay', (Math.random() * 5) + 's');
+                if (Math.random() > 0.6) {
+                    dot.style.width = '2px';
+                    dot.style.height = '2px';
+                }
+                field.appendChild(dot);
+            }
+            for (var j = 0; j < 10; j++) {
+                var star = document.createElement('div');
+                star.className = 'sparkle-star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--dur', (3 + Math.random() * 4) + 's');
+                star.style.setProperty('--delay', (Math.random() * 5) + 's');
+                field.appendChild(star);
+            }
+        })();
+
+        /* ── Smooth Anchor Scroll + Close Mobile Menu ── */
+        (function() {
+            var navLinks = document.getElementById('navLinks');
+            var hamburger = document.getElementById('hamburger');
+
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    var targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    var target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        /* Close mobile menu */
+                        navLinks.classList.remove('active');
+                        var offset = document.querySelector('nav').offsetHeight;
+                        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({ top: top, behavior: 'smooth' });
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
